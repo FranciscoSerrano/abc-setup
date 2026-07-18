@@ -25,13 +25,16 @@ file (`~/.bashrc` or `~/.zshrc`) automatically.
 Open your Ubuntu (WSL) terminal and run:
 
 ```bash
-git clone https://github.com/<your-username>/allyson-wsl-setup.git
-cd allyson-wsl-setup
-bash setup.sh
+git clone https://github.com/FranciscoSerrano/abc-setup.git
+cd abc-setup
+./setup.sh
 ```
 
 It'll ask for your password once or twice (that's `sudo` installing packages —
 totally normal).
+
+> If you see `permission denied`, run `bash setup.sh` instead (or
+> `chmod +x setup.sh` once, then `./setup.sh`).
 
 ## After it finishes — 2 steps
 
