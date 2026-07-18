@@ -1,0 +1,67 @@
+# ~/.config/starship.toml
+# Starship prompt -- themed with Catppuccin Mocha.
+# Full docs & options: https://starship.rs/config/
+# Catppuccin preset reference: https://github.com/catppuccin/starship
+
+# Use the Catppuccin Mocha color palette (defined at the bottom of this file).
+palette = "catppuccin_mocha"
+
+# ---------------------------------------------------------------------
+# The Catppuccin Mocha palette. These are named colors that the modules
+# below refer to (e.g. "mauve", "green"). To restyle the prompt, change
+# which colors the modules use rather than these hex values.
+# ---------------------------------------------------------------------
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+overlay0 = "#6c7086"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
+
+# ---------------------------------------------------------------------
+# Prompt modules. A clean, simple prompt: directory, git branch, git
+# status, then language versions when inside a matching project.
+# Delete a [module] block to hide it, or adjust its "style"/"format".
+# ---------------------------------------------------------------------
+
+# The current folder, in blue and bold.
+[directory]
+style = "bold blue"
+truncation_length = 3          # only show the last 3 folders in the path
+
+# Git branch name, in mauve/purple.
+[git_branch]
+style = "bold mauve"
+
+# Git status (dirty, ahead/behind, etc.), in peach.
+[git_status]
+style = "bold peach"
+
+# Language version badges -- shown only inside a project of that type.
+[nodejs]
+style = "bold green"
+
+[golang]
+style = "bold sky"
+
+# The prompt arrow. Green when the last command succeeded,
+# red when it failed -- a quick visual cue.
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
