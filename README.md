@@ -50,8 +50,7 @@ The Windows Terminal colors and font are set up automatically. If they didn't
 change — usually because you'd already customized Windows Terminal, so the script
 safely left your `settings.json` alone — just pick **Catppuccin Mocha** in
 Settings → your profile → Appearance → Color scheme (one click; the scheme is
-already installed). Full manual steps are in
-[`config/WINDOWS-TERMINAL.md`](config/WINDOWS-TERMINAL.md).
+already installed), and set the font to **JetBrainsMono Nerd Font**.
 
 ## Editing things yourself
 
@@ -62,7 +61,6 @@ Everything is meant to be tinkered with — the config files are commented:
 | Neovim | `~/.config/nvim/init.lua` |
 | Starship prompt | `~/.config/starship.toml` |
 | fastfetch | `~/.config/fastfetch/config.jsonc` |
-| Terminal font/colors | see `config/WINDOWS-TERMINAL.md` |
 | Windows Terminal scheme | fragment at `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\CatppuccinSetup` |
 
 ## Neovim quick-start

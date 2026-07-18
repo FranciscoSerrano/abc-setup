@@ -53,8 +53,8 @@ ok "Base tools ready."
 
 # ---------------------------------------------------------------------
 # 1. JetBrainsMono Nerd Font (installed into the Linux side).
-#    NOTE: Windows Terminal draws text with Windows fonts, so this also
-#    needs installing on Windows -- see config/WINDOWS-TERMINAL.md.
+#    NOTE: Windows Terminal draws text with Windows fonts, so section 8
+#    also copies this font to the Windows side when running under WSL.
 # ---------------------------------------------------------------------
 FONT_DIR="$HOME/.local/share/fonts"
 if ls "$FONT_DIR"/JetBrainsMono*.ttf >/dev/null 2>&1; then
@@ -281,7 +281,8 @@ if is_wsl && command -v powershell.exe >/dev/null 2>&1; then
 
   if [ -z "$WIN_LOCALAPPDATA" ] || [ ! -d "$WIN_LOCALAPPDATA" ]; then
     warn "Could not locate the Windows user folder; skipping automatic setup."
-    warn "See $CONFIG_SRC/WINDOWS-TERMINAL.md to finish the terminal theming by hand."
+    warn "In Windows Terminal, set the font to 'JetBrainsMono Nerd Font' and"
+    warn "pick a Catppuccin Mocha scheme manually under Settings -> Appearance."
   else
     # ---- (a) Install the Nerd Font on Windows (per-user, no admin) ----
     win_fonts="$WIN_LOCALAPPDATA/Microsoft/Windows/Fonts"
@@ -369,6 +370,7 @@ echo "   - Close this terminal and open a NEW one (so everything loads)."
 echo "     The first time you open Neovim (\`nvim\`), it auto-installs its"
 echo "     plugins -- give it a few seconds, then quit and reopen."
 echo
-warn "If the terminal colors/font didn't change automatically, or an icon"
-warn "shows as a box, see $CONFIG_SRC/WINDOWS-TERMINAL.md for the manual steps."
+warn "If the terminal colors/font didn't change automatically, open Windows"
+warn "Terminal Settings -> your profile -> Appearance, set the color scheme to"
+warn "'Catppuccin Mocha' and the font to 'JetBrainsMono Nerd Font'."
 echo
