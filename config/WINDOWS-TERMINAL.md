@@ -1,9 +1,18 @@
-# Making Windows Terminal Pretty (Catppuccin Mocha + Nerd Font)
+# Making Windows Terminal Pretty (Catppuccin Mocha + Nerd Font) — Manual Fallback
 
-Your Ubuntu shell tools (Starship, Neovim, fastfetch) are already themed by the
-setup script. But the **terminal window itself** — its colors and font — is drawn
-by **Windows Terminal**, which lives on the Windows side. WSL can't safely edit it
-for you, so here are the (quick!) manual steps.
+**You probably don't need this file.** `setup.sh` already tries to do all of
+this automatically: it installs the Nerd Font on the Windows side, adds the
+Catppuccin Mocha color scheme to Windows Terminal, and sets it as the default.
+
+Use these manual steps only if the script reported that it *couldn't* finish the
+Windows part — for example, if it found a customized `settings.json` and left it
+untouched on purpose (the safe choice).
+
+The quickest fix in that case is often just:
+**Windows Terminal → Settings → your profile → Appearance → Color scheme →
+"Catppuccin Mocha"** (the scheme is already installed, so it's one click).
+
+The full manual steps follow if you'd rather do it all by hand.
 
 You only do this once. Takes about 3 minutes.
 

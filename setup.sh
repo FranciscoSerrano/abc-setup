@@ -247,6 +247,10 @@ export PATH="\$PATH:/usr/local/go/bin:\$HOME/go/bin:\$HOME/.local/bin"
 # Start the Starship prompt.
 $STARSHIP_INIT
 
+# Make 'vim' and 'vi' open Neovim.
+alias vim='nvim'
+alias vi='nvim'
+
 # Run fastfetch when a new interactive terminal opens.
 $FASTFETCH_GUARD
 # <<< allyson-wsl-setup <<<
@@ -255,19 +259,116 @@ EOF
 fi
 
 # ---------------------------------------------------------------------
-# 8. Done -- final instructions.
+# 8. Windows Terminal integration (only runs under WSL).
+#    Best-effort and non-destructive:
+#      a) install the Nerd Font on the Windows side (per-user, no admin)
+#      b) install the Catppuccin Mocha scheme as a Windows Terminal
+#         "fragment" -- a safe add-on file that never touches settings.json
+#      c) best-effort: set it as the default scheme + font, but only after
+#         backing up settings.json and confirming it is valid JSON.
+# ---------------------------------------------------------------------
+is_wsl() { grep -qiE "(microsoft|wsl)" /proc/version 2>/dev/null; }
+
+if is_wsl && command -v powershell.exe >/dev/null 2>&1; then
+  info "WSL detected -- configuring Windows Terminal (font + Catppuccin Mocha)..."
+
+  # Resolve the Windows %LOCALAPPDATA% folder and convert it to a WSL path.
+  win_localappdata_raw="$(cmd.exe /c "echo %LOCALAPPDATA%" 2>/dev/null | tr -d '\r')"
+  WIN_LOCALAPPDATA=""
+  if [ -n "$win_localappdata_raw" ]; then
+    WIN_LOCALAPPDATA="$(wslpath -u "$win_localappdata_raw" 2>/dev/null || true)"
+  fi
+
+  if [ -z "$WIN_LOCALAPPDATA" ] || [ ! -d "$WIN_LOCALAPPDATA" ]; then
+    warn "Could not locate the Windows user folder; skipping automatic setup."
+    warn "See $CONFIG_SRC/WINDOWS-TERMINAL.md to finish the terminal theming by hand."
+  else
+    # ---- (a) Install the Nerd Font on Windows (per-user, no admin) ----
+    win_fonts="$WIN_LOCALAPPDATA/Microsoft/Windows/Fonts"
+    mkdir -p "$win_fonts"
+    installed_any=0
+    for ttf in "$FONT_DIR"/JetBrainsMono*.ttf; do
+      [ -e "$ttf" ] || continue
+      if [ ! -e "$win_fonts/$(basename "$ttf")" ]; then
+        cp "$ttf" "$win_fonts/"
+        installed_any=1
+      fi
+    done
+    if [ "$installed_any" -eq 1 ]; then
+      # Register the copied fonts in the per-user registry so Windows uses them.
+      powershell.exe -NoProfile -Command '
+        $fontDir = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts";
+        $reg = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts";
+        Get-ChildItem -Path $fontDir -Filter "JetBrainsMono*.ttf" | ForEach-Object {
+          New-ItemProperty -Path $reg -Name ($_.BaseName + " (TrueType)") -Value $_.FullName -PropertyType String -Force | Out-Null
+        }' >/dev/null 2>&1 \
+        && ok "Nerd Font installed and registered on Windows." \
+        || warn "Font copied to Windows, but may need a reboot to appear."
+    else
+      ok "Nerd Font already present on Windows."
+    fi
+
+    # ---- (b) Install the color scheme as a fragment (100% safe) -------
+    # Fragments are auto-loaded add-on files; they never modify settings.json.
+    frag_dir="$WIN_LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/CatppuccinSetup"
+    mkdir -p "$frag_dir"
+    cp "$CONFIG_SRC/windows-terminal/catppuccin-mocha.json" "$frag_dir/catppuccin-mocha.json"
+    ok "Catppuccin Mocha scheme installed to Windows Terminal."
+
+    # ---- (c) Best-effort: set the default scheme + font --------------
+    wt_settings="$WIN_LOCALAPPDATA/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+    if [ -f "$wt_settings" ] && command -v python3 >/dev/null 2>&1; then
+      cp "$wt_settings" "$wt_settings.bak-$(date +%Y%m%d-%H%M%S)"  # always back up first
+      if python3 - "$wt_settings" <<'PY'
+import json, sys
+path = sys.argv[1]
+try:
+    # utf-8-sig tolerates a BOM; json.load rejects comments/trailing commas.
+    with open(path, encoding="utf-8-sig") as f:
+        data = json.load(f)
+except Exception:
+    sys.exit(1)                      # not clean JSON -> leave the file untouched
+profiles = data.get("profiles")
+if not isinstance(profiles, dict):
+    sys.exit(1)                      # unexpected layout -> don't risk editing
+defaults = profiles.setdefault("defaults", {})
+if not isinstance(defaults, dict):
+    sys.exit(1)
+defaults["colorScheme"] = "Catppuccin Mocha"
+font = defaults.get("font")
+if not isinstance(font, dict):
+    font = {}
+    defaults["font"] = font
+font["face"] = "JetBrainsMono Nerd Font"
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=4)
+PY
+      then
+        ok "Set Catppuccin Mocha + Nerd Font as the Windows Terminal default."
+      else
+        warn "Windows Terminal settings look customized; left them untouched."
+        warn "Just choose 'Catppuccin Mocha' in Settings -> Appearance (1 click)."
+      fi
+    else
+      warn "Couldn't auto-set the default. The scheme is installed -- choose"
+      warn "'Catppuccin Mocha' in Windows Terminal Settings -> Appearance."
+    fi
+  fi
+else
+  info "Not running under WSL -- skipping Windows Terminal setup."
+fi
+
+# ---------------------------------------------------------------------
+# 9. Done -- final instructions.
 # ---------------------------------------------------------------------
 echo
 ok "All done! 🎉"
 echo
-info "Two quick things to finish up:"
-echo "   1. Close this terminal and open a NEW one (so everything loads)."
-echo "      The first time you open Neovim (\`nvim\`), it will auto-install"
-echo "      its plugins -- give it a few seconds, then quit and reopen."
+info "To finish up:"
+echo "   - Close this terminal and open a NEW one (so everything loads)."
+echo "     The first time you open Neovim (\`nvim\`), it auto-installs its"
+echo "     plugins -- give it a few seconds, then quit and reopen."
 echo
-echo "   2. Theme the terminal window itself (colors + font) by following:"
-echo "      $CONFIG_SRC/WINDOWS-TERMINAL.md"
-echo
-warn "If a Nerd Font icon looks like a box, you still need to install the"
-warn "font on the WINDOWS side and select it -- see WINDOWS-TERMINAL.md."
+warn "If the terminal colors/font didn't change automatically, or an icon"
+warn "shows as a box, see $CONFIG_SRC/WINDOWS-TERMINAL.md for the manual steps."
 echo

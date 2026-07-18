@@ -14,6 +14,10 @@ throughout.
   - LSP (autocomplete, go-to-definition, errors) for **JavaScript**, **Go**, and **Racket**
 - 🖼️ **fastfetch** that greets you in every new terminal, using the included art
 - 🧰 Language toolchains: **Node.js**, **Go**, and **Racket** (so the LSPs work)
+- 🎨 **Windows Terminal**, themed automatically: installs the font on the Windows
+  side, adds the Catppuccin Mocha scheme, and sets it as the default (best-effort;
+  see notes below)
+- ⌨️ `vim` and `vi` aliased to open **Neovim**
 
 The script is **safe to re-run** — it skips anything already installed and backs
 up any config it would replace into `~/.config-backup-<timestamp>/`. It also
@@ -36,14 +40,18 @@ totally normal).
 > If you see `permission denied`, run `bash setup.sh` instead (or
 > `chmod +x setup.sh` once, then `./setup.sh`).
 
-## After it finishes — 2 steps
+## After it finishes
 
-1. **Close the terminal and open a new one.** The first time you run `nvim`,
-   it downloads its plugins automatically — wait a few seconds, then quit
-   (`:q`) and reopen.
-2. **Make the terminal window itself pretty** (its colors + font) by following
-   [`config/WINDOWS-TERMINAL.md`](config/WINDOWS-TERMINAL.md). This part can't
-   be automated because Windows Terminal's settings live on the Windows side.
+**Close the terminal and open a new one** so everything loads. The first time you
+run `nvim`, it downloads its plugins automatically — wait a few seconds, then quit
+(`:q`) and reopen.
+
+The Windows Terminal colors and font are set up automatically. If they didn't
+change — usually because you'd already customized Windows Terminal, so the script
+safely left your `settings.json` alone — just pick **Catppuccin Mocha** in
+Settings → your profile → Appearance → Color scheme (one click; the scheme is
+already installed). Full manual steps are in
+[`config/WINDOWS-TERMINAL.md`](config/WINDOWS-TERMINAL.md).
 
 ## Editing things yourself
 
@@ -55,6 +63,7 @@ Everything is meant to be tinkered with — the config files are commented:
 | Starship prompt | `~/.config/starship.toml` |
 | fastfetch | `~/.config/fastfetch/config.jsonc` |
 | Terminal font/colors | see `config/WINDOWS-TERMINAL.md` |
+| Windows Terminal scheme | fragment at `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\CatppuccinSetup` |
 
 ## Neovim quick-start
 
